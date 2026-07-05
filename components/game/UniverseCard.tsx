@@ -1,4 +1,4 @@
-import { RarityBadge } from "@/components/RarityBadge";
+"use client";
 
 type Props = {
   name: string;
@@ -9,12 +9,28 @@ type Props = {
   stars: number;
 };
 
-const borderStyles = {
-  Common: "border-gray-400 shadow-gray-500/30",
-  Rare: "border-blue-400 shadow-blue-500/40",
-  Epic: "border-purple-400 shadow-purple-500/50",
-  Legendary: "border-yellow-300 shadow-yellow-500/60",
+const frameGlowStyles = {
+  Common: {
+    hover: "group-hover:drop-shadow-[0_0_18px_rgba(156,163,175,0.45)]",
+    selected: "drop-shadow-[0_0_26px_rgba(156,163,175,0.75)]",
+  },
+  Rare: {
+    hover: "group-hover:drop-shadow-[0_0_22px_rgba(59,130,246,0.65)]",
+    selected: "drop-shadow-[0_0_32px_rgba(59,130,246,0.9)]",
+  },
+  Epic: {
+    hover: "group-hover:drop-shadow-[0_0_26px_rgba(168,85,247,0.75)]",
+    selected: "drop-shadow-[0_0_38px_rgba(168,85,247,0.95)]",
+  },
+  Legendary: {
+    hover: "group-hover:drop-shadow-[0_0_30px_rgba(250,204,21,0.75)]",
+    selected: "drop-shadow-[0_0_44px_rgba(250,204,21,0.95)]",
+  },
 };
+
+function getFramePath(rarity: string) {
+  return `/images/frames/${rarity.toLowerCase()}.webp`;
+}
 
 export function UniverseCard({
   name,
@@ -22,49 +38,63 @@ export function UniverseCard({
   selected,
   onSelect,
   image,
-  stars,
 }: Props) {
+  const glow =
+    frameGlowStyles[rarity as keyof typeof frameGlowStyles] ??
+    frameGlowStyles.Common;
+
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onSelect}
-      className={`group relative h-[390px] w-full overflow-hidden rounded-[2rem] border-2 bg-black shadow-2xl transition duration-300 hover:-translate-y-2 hover:scale-[1.02] ${
-        borderStyles[rarity as keyof typeof borderStyles] ??
-        borderStyles.Common
-      } ${selected ? "ring-4 ring-green-400" : ""}`}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          onSelect();
+        }
+      }}
+      className="group relative aspect-[4/3] w-full cursor-pointer bg-transparent p-0 outline-none transition-transform duration-150 hover:-translate-y-1 hover:scale-[1.01]"
+      style={{
+        border: "none",
+        outline: "none",
+        boxShadow: "none",
+        WebkitTapHighlightColor: "transparent",
+      }}
     >
+      {/* Artwork area: endet INNERHALB des Rahmens */}
+      <div className="absolute left-[8%] right-[8%] top-[14%] bottom-[21%] z-0 overflow-hidden">
+        <img
+          src={image}
+          alt=""
+          draggable={false}
+          className="h-full w-full object-cover"
+        />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10" />
+      </div>
+
+      {/* Frame: geht über die komplette Karte */}
       <img
-        src={image}
-        alt={name}
-        className="absolute inset-0 h-full w-full object-cover opacity-90 transition duration-700 group-hover:scale-110"
+        src={getFramePath(rarity)}
+        alt=""
+        draggable={false}
+        className={`pointer-events-none absolute inset-0 z-20 h-full w-full object-fill transition-[filter] duration-150 ${
+          glow.hover
+        } ${selected ? glow.selected : ""}`}
       />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent" />
-
-      <div className="absolute left-5 top-5 flex gap-1">
-        {Array.from({ length: stars }).map((_, index) => (
-          <span
-            key={index}
-            className="text-xl text-yellow-300 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]"
-          >
-            ★
-          </span>
-        ))}
-      </div>
-
-      <div className="absolute bottom-0 left-0 right-0 border-t border-white/10 bg-black/45 p-6 backdrop-blur-sm">
-        <h2 className="text-3xl font-black uppercase tracking-wide text-white drop-shadow-2xl">
+      {/* Name im unteren Feld des Frames */}
+      <div className="absolute bottom-[7%] left-[20%] right-[20%] z-30 flex h-[10%] items-center justify-center">
+        <h2 className="max-w-full truncate text-center text-lg font-black uppercase tracking-widest text-white drop-shadow-[0_2px_8px_rgba(0,0,0,1)] md:text-xl">
           {name}
         </h2>
-
-        <div className="mt-3">
-          <RarityBadge rarity={rarity} />
-        </div>
-
-        <p className="mt-4 text-xs font-bold uppercase tracking-[0.3em] text-white/70">
-          {selected ? "Locked" : "Choose"}
-        </p>
       </div>
-    </button>
+
+      {selected && (
+        <div className="absolute right-[5%] top-[5%] z-40 rounded-full bg-black/75 px-4 py-2 text-xs font-black uppercase tracking-widest text-white backdrop-blur">
+          Locked
+        </div>
+      )}
+    </div>
   );
 }

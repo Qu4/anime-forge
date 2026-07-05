@@ -1,0 +1,19 @@
+:root {
+  --bg: #080414;
+
+  --panel: rgba(20, 18, 42, 0.72);
+  --panel-border: rgba(255,255,255,.08);
+
+  --primary: #A855F7;
+  --secondary: #EC4899;
+
+  --legendary: #FFD54A;
+  --epic: #9B5CFF;
+  --rare: #3BA8FF;
+  --common: #7A7A90;
+
+  --text: #F5F5FF;
+  --muted: #B8B8CC;
+
+  --shadow: 0 0 40px rgba(168,85,247,.25);
+}
