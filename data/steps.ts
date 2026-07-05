@@ -1,14 +1,9 @@
-export type GameOption = {
-  name: string;
-  rarity: "Common" | "Rare" | "Epic" | "Legendary";
-  stars: number;
-  image: string;
-};
+import type { GameStep } from "@/types/game";
 
-export const steps = [
+export const steps: GameStep[] = [
   {
     key: "universe",
-    title: "🌌 Your Universe",
+    title: "Your Universe",
     options: [
       { name: "Attack on Titan", rarity: "Legendary", stars: 5, image: "/images/universes/attack-on-titan.webp" },
       { name: "Naruto", rarity: "Legendary", stars: 5, image: "/images/universes/naruto.webp" },
@@ -24,7 +19,7 @@ export const steps = [
   },
   {
     key: "origin",
-    title: "🏯 Your Origin",
+    title: "Your Origin",
     options: [
       { name: "Konoha", rarity: "Legendary", stars: 5, image: "/images/origins/konoha.webp" },
       { name: "Shiganshina", rarity: "Epic", stars: 4, image: "/images/origins/shiganshina.webp" },
@@ -36,7 +31,7 @@ export const steps = [
   },
   {
     key: "faction",
-    title: "⚔️ Your Faction",
+    title: "Your Faction",
     options: [
       { name: "Akatsuki", rarity: "Legendary", stars: 5, image: "/images/factions/akatsuki.webp" },
       { name: "Straw Hat Pirates", rarity: "Legendary", stars: 5, image: "/images/factions/straw-hat-pirates.webp" },
