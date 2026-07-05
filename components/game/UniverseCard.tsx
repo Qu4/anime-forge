@@ -32,25 +32,37 @@ const artworkLayouts = {
     left: "8%",
     right: "8%",
     top: "14%",
-    bottom: "21%",
+    bottom: "11%",
+    x: "50%",
+    y: "50%",
+    scale: 1,
   },
   Rare: {
     left: "8%",
     right: "8%",
     top: "14%",
-    bottom: "21%",
+    bottom: "11%",
+    x: "50%",
+    y: "50%",
+    scale: 1,
   },
   Epic: {
     left: "8%",
     right: "8%",
     top: "14%",
-    bottom: "21%",
+    bottom: "5%",
+    x: "50%",
+    y: "50%",
+    scale: 1,
   },
   Legendary: {
     left: "8%",
     right: "8%",
     top: "14%",
-    bottom: "21%",
+    bottom: "7%",
+    x: "50%",
+    y: "50%",
+    scale: 0.89,
   },
 };
 
@@ -168,6 +180,10 @@ export function UniverseCard({
           alt=""
           draggable={false}
           className="h-full w-full object-cover"
+          style={{
+            objectPosition: `${artwork.x} ${artwork.y}`,
+            transform: `scale(${artwork.scale})`,
+          }}
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10" />

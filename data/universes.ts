@@ -12,7 +12,7 @@ export const universes: GameOption[] = [
     image: "/images/universes/death-note.webp",
   },
   {
-    name: "Fullmetal Alchemist",
+    name: "Fullmetal Alchemist: Brotherhood",
     rarity: "Rare",
     image: "/images/universes/fullmetal-alchemist.webp",
   },
@@ -102,9 +102,9 @@ export const universes: GameOption[] = [
     image: "/images/universes/the-seven-deadly-sins.webp",
   },
   {
-    name: "Promised Neverland",
+    name: "The Promised Neverland",
     rarity: "Common",
-    image: "/images/universes/promised-neverland.webp",
+    image: "/images/universes/the-promised-neverland.webp",
   },
   {
     name: "Blue Exorcist",
