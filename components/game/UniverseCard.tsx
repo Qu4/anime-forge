@@ -1,4 +1,4 @@
-import { RarityBadge } from "./RarityBadge";
+import { RarityBadge } from "@/components/RarityBadge";
 
 type Props = {
   name: string;

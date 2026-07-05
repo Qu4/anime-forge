@@ -2,11 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+
 import { steps } from "@/data/steps";
 import { getTwoRandomItems } from "@/lib/random";
-import { UniverseCard } from "@/components/UniverseCard";
-import { ProgressBar } from "@/components/ProgressBar";
-import { GameBackground } from "@/components/GameBackground";
+
+import { UniverseCard } from "@/components/game/UniverseCard";
+import { ProgressBar } from "@/components/game/ProgressBar";
+import { GameBackground } from "@/components/game/GameBackground";
+
+import { StepTitle } from "@/components/game/StepTitle";
+
 import { Panel } from "@/components/ui/Panel";
 import { GameButton } from "@/components/ui/GameButton";
 
@@ -112,13 +117,10 @@ export default function GamePage() {
                         <ProgressBar current={stepIndex + 1} total={steps.length} />
                     </Panel>
 
-                    <h1 className="mt-8 text-center text-4xl font-extrabold">
-                        {currentStep.title}
-                    </h1>
+                    <StepTitle title={currentStep.title} />
                 </div>
 
                 <h1 className="mt-8 text-center text-4xl font-extrabold">
-                    {currentStep.title}
                 </h1>
 
                 <div className="mt-10 grid gap-6 md:grid-cols-[1fr_auto_1fr] md:items-start">
