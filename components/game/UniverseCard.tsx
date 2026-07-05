@@ -6,7 +6,6 @@ type Props = {
   selected: boolean;
   onSelect: () => void;
   image: string;
-  stars: number;
 };
 
 const frameGlowStyles = {

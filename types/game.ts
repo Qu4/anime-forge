@@ -3,7 +3,6 @@ export type Rarity = "Common" | "Rare" | "Epic" | "Legendary";
 export type GameOption = {
   name: string;
   rarity: Rarity;
-  stars: number;
   image: string;
 };
 
