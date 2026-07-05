@@ -53,7 +53,8 @@ export function UniverseCard({
           onSelect();
         }
       }}
-      className="group relative aspect-[4/3] w-full cursor-pointer bg-transparent p-0 outline-none transition-transform duration-150 hover:-translate-y-1 hover:scale-[1.01]"
+      className={`group relative aspect-[4/3] w-full cursor-pointer bg-transparent p-0 outline-none transition-transform duration-150 hover:-translate-y-1 hover:scale-[1.01] ${selected ? "-translate-y-1 scale-[1.01]" : ""
+        }`}
       style={{
         border: "none",
         outline: "none",
@@ -61,7 +62,7 @@ export function UniverseCard({
         WebkitTapHighlightColor: "transparent",
       }}
     >
-      {/* Artwork area: endet INNERHALB des Rahmens */}
+      {/* Artwork area: ends in the frame */}
       <div className="absolute left-[8%] right-[8%] top-[14%] bottom-[21%] z-0 overflow-hidden">
         <img
           src={image}
@@ -73,28 +74,23 @@ export function UniverseCard({
         <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10" />
       </div>
 
-      {/* Frame: geht über die komplette Karte */}
+      {/* Frame: goes over the entire card */}
       <img
         src={getFramePath(rarity)}
         alt=""
         draggable={false}
-        className={`pointer-events-none absolute inset-0 z-20 h-full w-full object-fill transition-[filter] duration-150 ${
-          glow.hover
-        } ${selected ? glow.selected : ""}`}
+        className={`pointer-events-none absolute inset-0 z-20 h-full w-full object-fill transition-[filter] duration-150 ${glow.hover
+          } ${selected ? glow.selected : ""}`}
       />
 
-      {/* Name im unteren Feld des Frames */}
+      {/* Name in the bottom field of the frame */}
       <div className="absolute bottom-[7%] left-[20%] right-[20%] z-30 flex h-[10%] items-center justify-center">
         <h2 className="max-w-full truncate text-center text-lg font-black uppercase tracking-widest text-white drop-shadow-[0_2px_8px_rgba(0,0,0,1)] md:text-xl">
           {name}
         </h2>
       </div>
 
-      {selected && (
-        <div className="absolute right-[5%] top-[5%] z-40 rounded-full bg-black/75 px-4 py-2 text-xs font-black uppercase tracking-widest text-white backdrop-blur">
-          Locked
-        </div>
-      )}
+
     </div>
   );
 }
