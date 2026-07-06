@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { useGame } from "@/hooks/useGame";
@@ -41,7 +42,7 @@ function getStepSubject(title: string) {
   return "card";
 }
 
-export default function GamePage() {
+function GamePageContent() {
   const searchParams = useSearchParams();
   const playerName = searchParams.get("name") || "ACE";
 
@@ -146,5 +147,12 @@ export default function GamePage() {
         </div>
       </div>
     </GameBackground>
+  );
+}
+export default function GamePage() {
+  return (
+    <Suspense fallback={null}>
+      <GamePageContent />
+    </Suspense>
   );
 }
