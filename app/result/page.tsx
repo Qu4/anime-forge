@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import {
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import { GameBackground } from "@/components/game/GameBackground";
 import { GameButton } from "@/components/ui/GameButton";
@@ -17,6 +22,30 @@ type SelectedOption = GameOption & {
   stepKey: string;
   stepTitle: string;
 };
+
+type PuterImageOptions = {
+  provider?: string;
+  model?: string;
+  quality?: string;
+  ratio?: {
+    w: number;
+    h: number;
+  };
+  test_mode?: boolean;
+};
+
+declare global {
+  interface Window {
+    puter?: {
+      ai?: {
+        txt2img?: (
+          prompt: string,
+          options?: PuterImageOptions
+        ) => Promise<HTMLImageElement>;
+      };
+    };
+  }
+}
 
 const panelClip =
   "polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px)";
@@ -195,6 +224,67 @@ function getDestinyText(options: SelectedOption[], finalRarity: Rarity) {
   return `Your story starts quietly in ${universe}. But even a quiet soul can rise when "${ambition}" becomes the reason to keep moving forward.`;
 }
 
+function getPromptChoice(options: SelectedOption[], key: string) {
+  return options.find((option) => option.stepKey === key)?.name ?? "Unknown";
+}
+
+function loadPuter() {
+  return new Promise<void>((resolve, reject) => {
+    if (typeof window === "undefined") {
+      reject(new Error("Puter can only run in the browser."));
+      return;
+    }
+
+    if (window.puter?.ai?.txt2img) {
+      resolve();
+      return;
+    }
+
+    const existingScript = document.getElementById("puter-js-sdk");
+
+    if (existingScript) {
+      existingScript.addEventListener(
+        "load",
+        () => {
+          if (window.puter?.ai?.txt2img) {
+            resolve();
+          } else {
+            reject(new Error("Puter loaded, but txt2img is unavailable."));
+          }
+        },
+        { once: true }
+      );
+
+      existingScript.addEventListener(
+        "error",
+        () => reject(new Error("Failed to load Puter.js.")),
+        { once: true }
+      );
+
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.id = "puter-js-sdk";
+    script.src = "https://js.puter.com/v2/";
+    script.async = true;
+
+    script.onload = () => {
+      if (window.puter?.ai?.txt2img) {
+        resolve();
+      } else {
+        reject(new Error("Puter loaded, but txt2img is unavailable."));
+      }
+    };
+
+    script.onerror = () => {
+      reject(new Error("Failed to load Puter.js."));
+    };
+
+    document.body.appendChild(script);
+  });
+}
+
 function getGroupedOptions(options: SelectedOption[], keys: string[]) {
   return keys
     .map((key) => options.find((option) => option.stepKey === key))
@@ -206,6 +296,7 @@ type ShareModalProps = {
   characterTitle: string;
   finalRarity: Rarity;
   destinyText: string;
+  characterImageUrl: string | null;
   selectedOptions: SelectedOption[];
   onClose: () => void;
 };
@@ -215,14 +306,13 @@ function ShareModal({
   characterTitle,
   finalRarity,
   destinyText,
+  characterImageUrl,
   selectedOptions,
   onClose,
 }: ShareModalProps) {
   const rarityStyle = rarityStyles[finalRarity];
 
-  const shareUrl =
-    typeof window === "undefined" ? "" : window.location.href;
-
+  const shareUrl = typeof window === "undefined" ? "" : window.location.href;
   const shareText = `${playerName} forged ${characterTitle} — ${finalRarity} rarity in Anime Forge.`;
 
   const encodedText = encodeURIComponent(shareText);
@@ -281,6 +371,16 @@ function ShareModal({
         </p>
 
         <div className="mx-auto mt-5 max-w-[430px] border border-purple-200/25 bg-black/50 p-6 shadow-[0_0_38px_rgba(168,85,247,0.2)]">
+          {characterImageUrl && (
+            <div className="mx-auto mb-5 aspect-[3/4] max-w-[230px] overflow-hidden border border-purple-200/25 bg-black">
+              <img
+                src={characterImageUrl}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            </div>
+          )}
+
           <p className="text-xs font-semibold uppercase tracking-[0.32em] text-purple-200/80">
             Anime Forge
           </p>
@@ -394,9 +494,15 @@ function ShareModal({
 
 export default function ResultPage() {
   const [result, setResult] = useState<SavedResult | null>(null);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [aiDestinyText, setAiDestinyText] = useState<string | null>(null);
   const [isGeneratingDestiny, setIsGeneratingDestiny] = useState(false);
-  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [characterImageUrl, setCharacterImageUrl] = useState<string | null>(
+    null
+  );
+  const [isGeneratingCharacterImage, setIsGeneratingCharacterImage] =
+    useState(false);
+  const [characterImageError, setCharacterImageError] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("anime-forge-result");
@@ -431,10 +537,11 @@ export default function ResultPage() {
   }, [result]);
 
   const finalRarity = getAverageRarity(selectedOptions);
-const characterTitle = getCharacterTitle(selectedOptions);
-const destinyText = getDestinyText(selectedOptions, finalRarity);
-const displayedDestinyText = aiDestinyText ?? destinyText;
-const rarityStyle = rarityStyles[finalRarity];
+  const characterTitle = getCharacterTitle(selectedOptions);
+  const destinyText = getDestinyText(selectedOptions, finalRarity);
+  const displayedDestinyText = aiDestinyText ?? destinyText;
+  const rarityStyle = rarityStyles[finalRarity];
+
   useEffect(() => {
     if (!result || selectedOptions.length === 0) return;
 
@@ -479,6 +586,90 @@ const rarityStyle = rarityStyles[finalRarity];
       cancelled = true;
     };
   }, [result, selectedOptions, characterTitle, finalRarity]);
+
+  async function generateCharacterImage() {
+    if (!result || selectedOptions.length === 0) return;
+
+    try {
+      setIsGeneratingCharacterImage(true);
+      setCharacterImageError(false);
+
+      await loadPuter();
+
+      const universe = getPromptChoice(selectedOptions, "universe");
+      const origin = getPromptChoice(selectedOptions, "origin");
+      const faction = getPromptChoice(selectedOptions, "faction");
+      const species = getPromptChoice(selectedOptions, "species");
+      const role = getPromptChoice(selectedOptions, "role");
+      const powerSource = getPromptChoice(selectedOptions, "powerSource");
+      const ability = getPromptChoice(selectedOptions, "ability");
+      const weapon = getPromptChoice(selectedOptions, "weapon");
+      const fightingStyle = getPromptChoice(selectedOptions, "fightingStyle");
+      const relic = getPromptChoice(selectedOptions, "relic");
+      const ambition = getPromptChoice(selectedOptions, "ambition");
+
+      const prompt = `
+Create an original anime-inspired fantasy character portrait for Anime Forge.
+
+Important rules:
+- Original character only.
+- Do not copy or imitate existing anime characters.
+- Do not include text, logos, watermark, captions, UI, border, or frame.
+- One character only.
+- Vertical 3:4 trading-card artwork.
+- Upper-body to full-body portrait.
+- Character centered and clearly visible.
+- Dark cosmic purple fantasy background.
+- Cinematic lighting.
+- Sharp silhouette.
+- High-detail anime fantasy illustration.
+- Premium character card artwork.
+
+Character:
+Name: ${result.playerName}
+Title: ${characterTitle}
+Final Rarity: ${finalRarity}
+Universe inspiration: ${universe}
+Origin: ${origin}
+Faction: ${faction}
+Species: ${species}
+Role: ${role}
+Power Source: ${powerSource}
+Main Ability: ${ability}
+Weapon: ${weapon}
+Fighting Style: ${fightingStyle}
+Relic: ${relic}
+Ambition: ${ambition}
+
+Rarity direction:
+Common: grounded, battle-worn, determined.
+Rare: hidden potential, subtle aura, mysterious.
+Epic: dangerous aura, intense magic, battle-ready.
+Legendary: mythic, radiant, divine presence, overwhelming power.
+`;
+
+      const image = await window.puter?.ai?.txt2img?.(prompt, {
+        model: "gpt-image-1-mini",
+        quality: "low",
+        ratio: {
+          w: 3,
+          h: 4,
+        },
+      });
+
+      if (!image?.src) {
+        setCharacterImageError(true);
+        return;
+      }
+
+      setCharacterImageUrl(image.src);
+    } catch (error) {
+      console.error(error);
+      setCharacterImageError(true);
+    } finally {
+      setIsGeneratingCharacterImage(false);
+    }
+  }
 
   if (!result) {
     return (
@@ -533,6 +724,51 @@ const rarityStyle = rarityStyles[finalRarity];
             <div
               className={`pointer-events-none absolute inset-0 bg-gradient-to-b ${rarityStyle.bg}`}
             />
+
+            <div className="relative mx-auto mb-6 aspect-[3/4] max-w-[260px] overflow-hidden border border-purple-200/25 bg-black/60 shadow-[0_0_34px_rgba(168,85,247,0.2)]">
+              {characterImageUrl && (
+                <img
+                  src={characterImageUrl}
+                  alt={`${result.playerName} character portrait`}
+                  className="h-full w-full object-cover"
+                />
+              )}
+
+              {!characterImageUrl && (
+                <div className="flex h-full w-full items-center justify-center px-6 text-center">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.22em] text-purple-200/80">
+                      {isGeneratingCharacterImage
+                        ? "Forging your appearance..."
+                        : characterImageError
+                        ? "Image unavailable"
+                        : "AI Appearance"}
+                    </p>
+
+                    <div className="mx-auto mt-4 h-px w-24 bg-purple-200/25" />
+
+                    <p className="mt-4 text-xs leading-5 text-white/45">
+                      {isGeneratingCharacterImage
+                        ? "The forge is shaping your final form."
+                        : characterImageError
+                        ? "Puter could not create an image right now. Try again later or choose another model."
+                        : "Generate an original anime-style portrait for this result."}
+                    </p>
+
+                    {!isGeneratingCharacterImage && (
+                      <button
+                        onClick={generateCharacterImage}
+                        className="mt-5 border border-purple-200/30 bg-purple-500/15 px-4 py-3 text-xs font-black uppercase tracking-[0.16em] text-white transition hover:bg-purple-500/25"
+                      >
+                        {characterImageError
+                          ? "Try Again"
+                          : "Generate Appearance"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
 
             <p className="relative text-xs font-black uppercase tracking-[0.36em] text-purple-200">
               Final Rarity
@@ -619,10 +855,7 @@ const rarityStyle = rarityStyles[finalRarity];
         </section>
 
         <div className="mt-9 flex flex-wrap justify-center gap-4">
-          <GameButton
-            variant="secondary"
-            onClick={() => setIsShareOpen(true)}
-          >
+          <GameButton variant="secondary" onClick={() => setIsShareOpen(true)}>
             Share
           </GameButton>
 
@@ -638,6 +871,7 @@ const rarityStyle = rarityStyles[finalRarity];
           characterTitle={characterTitle}
           finalRarity={finalRarity}
           destinyText={displayedDestinyText}
+          characterImageUrl={characterImageUrl}
           selectedOptions={selectedOptions}
           onClose={() => setIsShareOpen(false)}
         />
