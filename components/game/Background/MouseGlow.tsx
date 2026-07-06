@@ -3,34 +3,47 @@
 import { useEffect, useRef } from "react";
 
 export function MouseGlow() {
-  const ref = useRef<HTMLDivElement | null>(null);
+  const glowRef = useRef<HTMLDivElement | null>(null);
+  const frameRef = useRef<number | null>(null);
 
   useEffect(() => {
-    let frame = 0;
+    function handlePointerMove(event: PointerEvent) {
+      if (frameRef.current !== null) return;
 
-    function handleMouseMove(event: MouseEvent) {
-      if (frame) return;
+      frameRef.current = requestAnimationFrame(() => {
+        const glow = glowRef.current;
+        if (!glow) return;
 
-      frame = requestAnimationFrame(() => {
-        if (ref.current) {
-          ref.current.style.transform = `translate3d(${event.clientX - 220}px, ${event.clientY - 220}px, 0)`;
-        }
+        glow.style.setProperty("--mouse-x", `${event.clientX}px`);
+        glow.style.setProperty("--mouse-y", `${event.clientY}px`);
 
-        frame = 0;
+        frameRef.current = null;
       });
     }
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("pointermove", handlePointerMove, {
+      passive: true,
+    });
+
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      cancelAnimationFrame(frame);
+      window.removeEventListener("pointermove", handlePointerMove);
+
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current);
+      }
     };
   }, []);
 
   return (
     <div
-      ref={ref}
-      className="pointer-events-none absolute left-0 top-0 h-[360px] w-[360px] rounded-full bg-purple-500/12 blur-[70px] will-change-transform"
+      ref={glowRef}
+      className="pointer-events-none fixed inset-0 z-[4] opacity-80"
+      style={{
+        "--mouse-x": "50vw",
+        "--mouse-y": "50vh",
+        background:
+          "radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(168,85,247,0.22) 0px, rgba(168,85,247,0.12) 90px, rgba(34,211,238,0.06) 170px, transparent 310px)",
+      } as React.CSSProperties}
     />
   );
 }

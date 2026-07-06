@@ -4,13 +4,13 @@ type Props = {
 };
 
 export function ProgressBar({ current, total }: Props) {
-  const percentage = (current / total) * 100;
+  const progress = Math.max(0, Math.min(100, (current / total) * 100));
 
   return (
-    <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-white/10">
+    <div className="mx-auto mt-5 h-[10px] w-full max-w-[440px] rounded-full border border-purple-200/20 bg-black/35 p-[2px]">
       <div
-        className="h-full rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 transition-all duration-500"
-        style={{ width: `${percentage}%` }}
+        className="h-full rounded-full bg-gradient-to-r from-fuchsia-500 via-purple-400 to-violet-500 shadow-[0_0_14px_rgba(217,70,239,0.75)]"
+        style={{ width: `${progress}%` }}
       />
     </div>
   );
