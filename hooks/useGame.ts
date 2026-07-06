@@ -1,11 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import { steps } from "@/data/steps";
 import { getTwoRandomItems } from "@/lib/random";
 import type { GameAnswers, GameOption } from "@/types/game";
 
-export function useGame() {
+type SavedResult = {
+  playerName: string;
+  answers: GameAnswers;
+};
+
+export function useGame(playerName = "ACE") {
+  const router = useRouter();
+
   const [stepIndex, setStepIndex] = useState(0);
   const [options, setOptions] = useState<[GameOption, GameOption] | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
@@ -22,6 +31,7 @@ export function useGame() {
 
   function lockOption(option: GameOption) {
     setSelected(option.name);
+
     setAnswers((oldAnswers) => ({
       ...oldAnswers,
       [currentStep.key]: option.name,
@@ -36,8 +46,7 @@ export function useGame() {
 
     const possibleReplacements = currentStep.options.filter(
       (option) =>
-        option.name !== oldOption.name &&
-        option.name !== otherOption.name
+        option.name !== oldOption.name && option.name !== otherOption.name
     );
 
     if (possibleReplacements.length === 0) return;
@@ -60,12 +69,24 @@ export function useGame() {
   function nextStep() {
     if (!selected) return;
 
+    const updatedAnswers = {
+      ...answers,
+      [currentStep.key]: selected,
+    };
+
     if (stepIndex < steps.length - 1) {
+      setAnswers(updatedAnswers);
       setStepIndex((current) => current + 1);
-    } else {
-      alert("Result screen coming next.");
-      console.log(answers);
+      return;
     }
+
+    const result: SavedResult = {
+      playerName,
+      answers: updatedAnswers,
+    };
+
+    localStorage.setItem("anime-forge-result", JSON.stringify(result));
+    router.push("/result");
   }
 
   return {

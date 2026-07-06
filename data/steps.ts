@@ -13,7 +13,7 @@ import { mentors } from "@/data/mentors";
 import { rivals } from "@/data/rivals";
 import { companions } from "@/data/companions";
 import { relics } from "@/data/relics";
-import { destinies } from "@/data/destinies";
+import { ambitions } from "@/data/ambitions";
 
 export const steps: GameStep[] = [
   {
@@ -82,8 +82,8 @@ export const steps: GameStep[] = [
     options: relics,
   },
   {
-    key: "destiny",
-    title: "Your Destiny",
-    options: destinies,
+    key: "ambition",
+    title: "Your Ambition",
+    options: ambitions,
   },
 ];

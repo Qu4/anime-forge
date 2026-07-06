@@ -55,7 +55,7 @@ export default function GamePage() {
     lockOption,
     reroll,
     nextStep,
-  } = useGame();
+  } = useGame(playerName);
 
   if (!options) {
     return (

@@ -11,9 +11,61 @@ function getDisplayTitle(title: string) {
 function getSubtitle(title: string) {
   const lower = title.toLowerCase();
 
-  if (lower.includes("universe")) return "Every legend begins somewhere";
-  if (lower.includes("origin")) return "Your story starts here";
-  if (lower.includes("faction")) return "Choose who stands beside you";
+  if (lower.includes("universe")) {
+    return "Every legend begins somewhere";
+  }
+
+  if (lower.includes("origin")) {
+    return "Your story starts here";
+  }
+
+  if (lower.includes("faction")) {
+    return "Choose who stands beside you";
+  }
+
+  if (lower.includes("species")) {
+    return "Blood decides what the world sees first";
+  }
+
+  if (lower.includes("role")) {
+    return "Every hero needs a place in the story";
+  }
+
+  if (lower.includes("power source")) {
+    return "The force within you begins to awaken";
+  }
+
+  if (lower.includes("ability")) {
+    return "Power takes shape in your hands";
+  }
+
+  if (lower.includes("weapon")) {
+    return "A true weapon chooses its wielder";
+  }
+
+  if (lower.includes("fighting style")) {
+    return "How you fight reveals who you are";
+  }
+
+  if (lower.includes("mentor")) {
+    return "Even legends once needed guidance";
+  }
+
+  if (lower.includes("rival")) {
+    return "The one who pushes you beyond your limits";
+  }
+
+  if (lower.includes("companion")) {
+    return "No great journey is walked alone";
+  }
+
+  if (lower.includes("relic")) {
+    return "Ancient power waits to be claimed";
+  }
+
+  if (lower.includes("ambition")) {
+    return "The dream that keeps your fire alive";
+  }
 
   return "Forge your destiny";
 }
