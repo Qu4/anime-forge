@@ -24,10 +24,9 @@ export function GameButton({
     return (
       <button
         disabled={disabled}
-        className={`group relative isolate h-[68px] min-w-[360px] overflow-visible bg-transparent text-base font-black uppercase tracking-[0.18em] text-white transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-45 ${className}`}
+        className={`group relative isolate h-[68px] w-full min-w-[280px] max-w-[360px] overflow-visible bg-transparent text-base font-black uppercase tracking-[0.18em] text-white transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-45 sm:min-w-[360px] ${className}`}
         {...props}
       >
-        {/* Button shape always behind text */}
         <svg
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-0 overflow-visible"
@@ -71,7 +70,6 @@ export function GameButton({
           />
         </svg>
 
-        {/* Text layer guaranteed above the SVG */}
         <span
           className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center leading-none"
           style={{
@@ -83,9 +81,8 @@ export function GameButton({
           </span>
         </span>
 
-        {/* Arrows slightly higher than before */}
         <span
-          className="pointer-events-none absolute left-[22%] top-1/2 z-50 text-xl leading-none text-purple-100/80 transition-transform duration-150 group-hover:-translate-x-1"
+          className="pointer-events-none absolute left-[17%] top-1/2 z-50 text-xl leading-none text-purple-100/80 transition-transform duration-150 group-hover:-translate-x-1 sm:left-[22%]"
           style={{
             transform: "translateY(calc(-50% - 5px))",
           }}
@@ -94,7 +91,7 @@ export function GameButton({
         </span>
 
         <span
-          className="pointer-events-none absolute right-[22%] top-1/2 z-50 text-xl leading-none text-purple-100/80 transition-transform duration-150 group-hover:translate-x-1"
+          className="pointer-events-none absolute right-[17%] top-1/2 z-50 text-xl leading-none text-purple-100/80 transition-transform duration-150 group-hover:translate-x-1 sm:right-[22%]"
           style={{
             transform: "translateY(calc(-50% - 5px))",
           }}

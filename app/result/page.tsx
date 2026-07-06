@@ -356,7 +356,7 @@ function ShareModal({
         clipPath={panelClip}
         borderClassName={rarityStyle.borderBg}
         className="relative z-10 w-full max-w-[760px] shadow-[0_0_70px_rgba(168,85,247,0.35)]"
-        innerClassName="max-h-[88vh] overflow-y-auto bg-[#080414]/95 p-6 text-center"
+        innerClassName="max-h-[88vh] overflow-y-auto bg-[#080414]/95 p-4 text-center sm:p-6"
       >
         <button
           onClick={onClose}
@@ -385,7 +385,7 @@ function ShareModal({
             Anime Forge
           </p>
 
-          <h2 className="mt-3 font-serif text-4xl font-black uppercase tracking-[0.08em] text-white drop-shadow-[0_0_20px_rgba(216,180,254,0.6)]">
+          <h2 className="mt-3 break-words font-serif text-3xl font-black uppercase tracking-[0.08em] text-white drop-shadow-[0_0_20px_rgba(216,180,254,0.6)] sm:text-4xl">
             {playerName}
           </h2>
 
@@ -699,13 +699,13 @@ Legendary: mythic, radiant, divine presence, overwhelming power.
 
   return (
     <GameBackground variant="static">
-      <div className="result-page mx-auto flex min-h-screen max-w-[1120px] flex-col items-center px-4 py-8">
+      <div className="result-page mx-auto flex min-h-screen max-w-[1120px] flex-col items-center px-3 py-6 sm:px-4 sm:py-8">
         <section className="w-full text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.42em] text-purple-200">
             Anime Forge Result
           </p>
 
-          <h1 className="mt-3 font-serif text-5xl font-black uppercase tracking-[0.08em] text-white drop-shadow-[0_0_24px_rgba(216,180,254,0.65)] md:text-6xl">
+          <h1 className="mt-3 max-w-full break-words font-serif text-4xl font-black uppercase tracking-[0.08em] text-white drop-shadow-[0_0_24px_rgba(216,180,254,0.65)] sm:text-5xl md:text-6xl">
             {result.playerName}
           </h1>
 
@@ -719,13 +719,13 @@ Legendary: mythic, radiant, divine presence, overwhelming power.
             clipPath={panelClip}
             borderClassName={rarityStyle.borderBg}
             className="shadow-[0_0_55px_rgba(168,85,247,0.2)]"
-            innerClassName="overflow-hidden bg-[#080414]/62 p-8 text-center"
+            innerClassName="overflow-hidden bg-[#080414]/62 p-5 text-center sm:p-8"
           >
             <div
               className={`pointer-events-none absolute inset-0 bg-gradient-to-b ${rarityStyle.bg}`}
             />
 
-            <div className="relative mx-auto mb-6 aspect-[3/4] max-w-[260px] overflow-hidden border border-purple-200/25 bg-black/60 shadow-[0_0_34px_rgba(168,85,247,0.2)]">
+            <div className="relative mx-auto mb-6 aspect-[3/4] w-full max-w-[230px] overflow-hidden border border-purple-200/25 bg-black/60 shadow-[0_0_34px_rgba(168,85,247,0.2)] sm:max-w-[260px]">
               {characterImageUrl && (
                 <img
                   src={characterImageUrl}
@@ -741,8 +741,8 @@ Legendary: mythic, radiant, divine presence, overwhelming power.
                       {isGeneratingCharacterImage
                         ? "Forging your appearance..."
                         : characterImageError
-                        ? "Image unavailable"
-                        : "AI Appearance"}
+                          ? "Image unavailable"
+                          : "AI Appearance"}
                     </p>
 
                     <div className="mx-auto mt-4 h-px w-24 bg-purple-200/25" />
@@ -751,8 +751,8 @@ Legendary: mythic, radiant, divine presence, overwhelming power.
                       {isGeneratingCharacterImage
                         ? "The forge is shaping your final form."
                         : characterImageError
-                        ? "Puter could not create an image right now. Try again later or choose another model."
-                        : "Generate an original anime-style portrait for this result."}
+                          ? "Puter could not create an image right now. Try again later or choose another model."
+                          : "Generate an original anime-style portrait for this result."}
                     </p>
 
                     {!isGeneratingCharacterImage && (
@@ -775,7 +775,7 @@ Legendary: mythic, radiant, divine presence, overwhelming power.
             </p>
 
             <h2
-              className={`relative mt-5 font-serif text-5xl font-black uppercase tracking-[0.08em] ${rarityStyle.text} ${rarityStyle.glow} md:text-6xl`}
+              className={`relative mt-5 font-serif text-4xl font-black uppercase tracking-[0.08em] ${rarityStyle.text} ${rarityStyle.glow} sm:text-5xl md:text-6xl`}
             >
               {finalRarity}
             </h2>
@@ -854,12 +854,16 @@ Legendary: mythic, radiant, divine presence, overwhelming power.
           </div>
         </section>
 
-        <div className="mt-9 flex flex-wrap justify-center gap-4">
-          <GameButton variant="secondary" onClick={() => setIsShareOpen(true)}>
+        <div className="mt-9 flex w-full flex-wrap justify-center gap-4">
+          <GameButton
+            variant="secondary"
+            className="w-full max-w-[360px]"
+            onClick={() => setIsShareOpen(true)}
+          >
             Share
           </GameButton>
 
-          <Link href="/">
+          <Link href="/" className="w-full max-w-[360px]">
             <GameButton variant="continue">Start Over</GameButton>
           </Link>
         </div>
